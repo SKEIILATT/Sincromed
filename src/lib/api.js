@@ -20,14 +20,14 @@ export async function fetchTomas(phone) {
   return items.sort((a, b) => (a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0));
 }
 
-export async function saveCaregiver({ nombreCuidador, telefonoCuidador, medicinas }) {
+export async function saveCaregiver({ nombreCuidador, telefonoCuidador, medicinas, nombreAdultoMayor }) {
   // The Jelou Function normalizes the phone and upserts in one call when an apps key is set.
   if (APPS_KEY) {
     const headers = { "Content-Type": "application/json", Authorization: `Bearer ${APPS_KEY}` };
     await fetch(`${FN_BASE}/registrar-paciente`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ nombreCuidador, telefonoCuidador, medicinas }),
+      body: JSON.stringify({ nombreCuidador, telefonoCuidador, medicinas, nombreAdultoMayor }),
     });
     return;
   }
@@ -43,6 +43,7 @@ export async function saveCaregiver({ nombreCuidador, telefonoCuidador, medicina
   const payload = {
     telefono_cuidador: phone,
     nombre_cuidador: nombreCuidador,
+    nombre_adulto_mayor: nombreAdultoMayor,
     medicinas: JSON.stringify(medicinas),
   };
   if (existing.items?.length) {

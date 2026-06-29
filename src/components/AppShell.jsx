@@ -5,7 +5,7 @@ import { User, Pill, Plus, X, LogOut, CheckCircle2, AlertCircle } from "lucide-r
 import logotipo from "../assets/logotipo.png";
 import PhoneInput from "./PhoneInput";
 import { fetchTomas, saveCaregiver, getCaregiverLink, setCaregiverLink } from "../lib/api";
-import { validateName, validatePhone } from "../lib/validation";
+import { validateName, validatePhone, validatePatientName } from "../lib/validation";
 import AdherenceHistory from "./AdherenceHistory";
 
 const cardVariants = {
@@ -16,6 +16,7 @@ const cardVariants = {
 export default function AppShell({ user, onLogout }) {
   const [meds, setMeds] = useState([{ nombre: "", dosis: "", hora: "" }]);
   const [caregiverName, setCaregiverName] = useState("");
+  const [patientName, setPatientName] = useState("");
   // The backend has no link between a family member's account and "their" caregiver,
   // so we remember it locally and reuse it to know which telefono_cuidador to query.
   const [caregiverPhone, setCaregiverPhone] = useState(() => getCaregiverLink(user.phone));
@@ -48,6 +49,8 @@ export default function AppShell({ user, onLogout }) {
     setCaregiverErr("");
     const nameErr = validateName(caregiverName);
     if (nameErr) { setCaregiverErr(nameErr); return; }
+    const patientErr = validatePatientName(patientName);
+    if (patientErr) { setCaregiverErr(patientErr); return; }
     const phoneErr = validatePhone(caregiverPhone);
     if (phoneErr) { setCaregiverErr(phoneErr); return; }
     const validMeds = meds.filter((m) => m.nombre && m.hora);
@@ -57,7 +60,7 @@ export default function AppShell({ user, onLogout }) {
     }
     setSaving(true);
     try {
-      await saveCaregiver({ nombreCuidador: caregiverName.trim(), telefonoCuidador: caregiverPhone, medicinas: validMeds });
+      await saveCaregiver({ nombreCuidador: caregiverName.trim(), nombreAdultoMayor: patientName.trim(), telefonoCuidador: caregiverPhone, medicinas: validMeds });
       setCaregiverLink(user.phone, caregiverPhone);
       setSaved(true);
       sileo.success({ title: "Cuidador registrado" });
@@ -105,7 +108,7 @@ export default function AppShell({ user, onLogout }) {
         </AnimatePresence>
 
         <motion.div className="sm-card" variants={cardVariants} initial="hidden" animate="show">
-          <div className="sm-card-title"><User size={18} /> Datos del cuidador</div>
+          <div className="sm-card-title"><User size={18} /> Datos del cuidador y el adulto mayor</div>
           <div className="sm-form-row">
             <div className="sm-field">
               <label className="sm-label">Nombre del cuidador</label>
@@ -115,6 +118,10 @@ export default function AppShell({ user, onLogout }) {
               <label className="sm-label">WhatsApp del cuidador</label>
               <PhoneInput value={caregiverPhone} onChange={setCaregiverPhone} placeholder="98 877 7666" />
             </div>
+          </div>
+          <div className="sm-field">
+            <label className="sm-label">Nombre del adulto mayor</label>
+            <input className="sm-input" placeholder="Ej. Don José" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
           </div>
         </motion.div>
 

@@ -8,6 +8,12 @@ export function validateName(name) {
   return "";
 }
 
+export function validatePatientName(name) {
+  if (!name.trim()) return "Ingresa el nombre del adulto mayor.";
+  if (!NAME_RE.test(name.trim())) return "Ingresa un nombre válido (solo letras).";
+  return "";
+}
+
 export function validatePhone(e164digits) {
   if (!e164digits) return "Ingresa un número de teléfono.";
   const { country, national } = decomposeE164(e164digits);
