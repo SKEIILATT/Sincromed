@@ -4,6 +4,7 @@ import Stats from "./Stats";
 import HowItWorks from "./HowItWorks";
 import Features from "./Features";
 import Testimonials from "./Testimonials";
+import FeedbackSection from "./FeedbackSection";
 import CtaSection from "./CtaSection";
 import Footer from "./Footer";
 
@@ -16,6 +17,7 @@ export default function Landing({ onLogin, onRegister }) {
       <HowItWorks />
       <Features />
       <Testimonials />
+      <FeedbackSection />
       <CtaSection onRegister={onRegister} onLogin={onLogin} />
       <Footer />
     </>
