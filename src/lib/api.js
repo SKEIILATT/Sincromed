@@ -8,6 +8,35 @@ export function normPhone(p) {
   return p.replace(/\D/g, "");
 }
 
+// Link directo al chat del sandbox de WhatsApp de SincroMed.
+export const WA_SANDBOX = "13239183195";
+export function waSandboxLink(nombre) {
+  const txt = encodeURIComponent(`Hola SincroMed${nombre ? `, soy ${nombre}` : ""}`);
+  return `https://wa.me/${WA_SANDBOX}?text=${txt}`;
+}
+
+// Whitelistea el número del cuidador en el sandbox de WhatsApp (ruta pública
+// de la Function; el secret de Jelou vive del lado del servidor).
+export async function conectarWhatsapp({ telefonoCuidador, nombreCuidador }) {
+  const res = await fetch(`${FN_BASE}/conectar-whatsapp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ telefonoCuidador, nombreCuidador }),
+  });
+  return res.json();
+}
+
+// Dispara el recordatorio: WhatsApp con la próxima medicina + vibración de la
+// pulsera. Devuelve { ok, enviado, vibrando, medicina, error, waLink }.
+export async function simularToma(telefonoCuidador) {
+  const res = await fetch(`${FN_BASE}/simular-toma`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ telefonoCuidador }),
+  });
+  return res.json();
+}
+
 export async function fetchTomas(phone) {
   const filter = encodeURIComponent(`(telefono_cuidador='${normPhone(phone)}')`);
   // Note: this collection's API rules don't allow sorting by "created", so we

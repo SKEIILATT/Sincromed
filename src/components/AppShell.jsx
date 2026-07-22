@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { sileo } from "sileo";
-import { User, Pill, Plus, X, LogOut, CheckCircle2, AlertCircle } from "lucide-react";
+import { User, Pill, Plus, X, LogOut, CheckCircle2, AlertCircle, MessageCircle, BellRing } from "lucide-react";
 import logotipo from "../assets/logotipo.png";
 import PhoneInput from "./PhoneInput";
-import { fetchTomas, saveCaregiver, getCaregiverLink, setCaregiverLink } from "../lib/api";
+import { fetchTomas, saveCaregiver, getCaregiverLink, setCaregiverLink, conectarWhatsapp, simularToma, waSandboxLink } from "../lib/api";
 import { validateName, validatePhone, validatePatientName } from "../lib/validation";
 import AdherenceHistory from "./AdherenceHistory";
 
@@ -25,6 +25,7 @@ export default function AppShell({ user, onLogout }) {
   const [caregiverErr, setCaregiverErr] = useState("");
   const [tomas, setTomas] = useState([]);
   const [loadingTomas, setLoadingTomas] = useState(true);
+  const [simulating, setSimulating] = useState(false);
 
   useEffect(() => { loadTomas(caregiverPhone); }, []);
 
@@ -65,10 +66,42 @@ export default function AppShell({ user, onLogout }) {
       setSaved(true);
       sileo.success({ title: "Cuidador registrado" });
       loadTomas(caregiverPhone);
+      // Whitelistea el número en el sandbox de WhatsApp para que el bot pueda escribirle.
+      conectarWhatsapp({ telefonoCuidador: caregiverPhone, nombreCuidador: caregiverName.trim() }).catch(() => {});
     } catch {
       sileo.error({ title: "No se pudo guardar" });
     }
     setSaving(false);
+  }
+
+  async function handleSimular() {
+    if (!caregiverPhone) {
+      sileo.error({ title: "Primero registra al cuidador y sus medicinas" });
+      return;
+    }
+    setSimulating(true);
+    try {
+      const r = await simularToma(caregiverPhone);
+      if (r.enviado) {
+        sileo.success({
+          title: "Recordatorio enviado 📱",
+          description: `Revisa WhatsApp: toca tomar ${r.medicina}. La pulsera está vibrando.`,
+        });
+      } else if (r.error === "no_registrado") {
+        sileo.error({ title: "Ese número no tiene cuidador registrado" });
+      } else {
+        // Sin sesión de 24h abierta el mensaje no entra: abrimos el chat para
+        // que salude al bot y pueda volver a intentar.
+        window.open(r.waLink || waSandboxLink(caregiverName), "_blank");
+        sileo.error({
+          title: "Aún no hay chat activo",
+          description: "Envía el saludo en WhatsApp y vuelve a presionar Simular toma.",
+        });
+      }
+    } catch {
+      sileo.error({ title: "No se pudo simular la toma" });
+    }
+    setSimulating(false);
   }
 
   const initials = user.name ? user.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() : "U";
@@ -102,7 +135,13 @@ export default function AppShell({ user, onLogout }) {
               transition={{ duration: 0.3 }}
             >
               <CheckCircle2 size={18} />
-              <span>El agente de WhatsApp ya tiene los medicamentos. Le escribirá al cuidador en el horario indicado.</span>
+              <span>
+                El agente de WhatsApp ya tiene los medicamentos. Último paso:{" "}
+                <a href={waSandboxLink(caregiverName)} target="_blank" rel="noreferrer" style={{ fontWeight: 700, textDecoration: "underline", color: "inherit" }}>
+                  salúdalo en WhatsApp
+                </a>{" "}
+                para activar los recordatorios.
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -166,6 +205,37 @@ export default function AppShell({ user, onLogout }) {
             >
               {saving ? "Guardando…" : "Guardar y activar recordatorios"}
             </motion.button>
+          </div>
+        </motion.div>
+
+        <motion.div className="sm-card" variants={cardVariants} initial="hidden" animate="show" transition={{ delay: 0.14 }}>
+          <div className="sm-card-title"><BellRing size={18} /> Probar la experiencia</div>
+          <p style={{ margin: "0 0 14px", color: "var(--sm-text-soft, #5b6572)", fontSize: 14, lineHeight: 1.5 }}>
+            Simula la hora de la toma: el cuidador recibe el recordatorio por WhatsApp con la próxima
+            medicina y la pulsera SincroMed empieza a vibrar. Al presionar el botón de la pulsera,
+            el chat pedirá confirmar qué pastillas se tomó.
+          </p>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <motion.button
+              className="sm-save-btn"
+              style={{ marginTop: 0 }}
+              disabled={simulating}
+              onClick={handleSimular}
+              whileHover={{ scale: simulating ? 1 : 1.02 }}
+              whileTap={{ scale: simulating ? 1 : 0.98 }}
+            >
+              <BellRing size={15} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+              {simulating ? "Enviando…" : "Simular toma"}
+            </motion.button>
+            <a
+              href={waSandboxLink(caregiverName)}
+              target="_blank"
+              rel="noreferrer"
+              className="sm-add-med-btn"
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none" }}
+            >
+              <MessageCircle size={15} /> Abrir chat de WhatsApp
+            </a>
           </div>
         </motion.div>
 
