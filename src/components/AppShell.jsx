@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { sileo } from "sileo";
 import { User, Pill, Plus, X, LogOut, CheckCircle2, AlertCircle, MessageCircle, BellRing } from "lucide-react";
 import logotipo from "../assets/logotipo.png";
 import PhoneInput from "./PhoneInput";
@@ -13,7 +12,7 @@ const cardVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
 };
 
-export default function AppShell({ user, onLogout }) {
+export default function AppShell({ user, onLogout, notify }) {
   const [meds, setMeds] = useState([{ nombre: "", dosis: "", hora: "" }]);
   const [caregiverName, setCaregiverName] = useState("");
   const [patientName, setPatientName] = useState("");
@@ -64,36 +63,33 @@ export default function AppShell({ user, onLogout }) {
       await saveCaregiver({ nombreCuidador: caregiverName.trim(), nombreAdultoMayor: patientName.trim(), telefonoCuidador: caregiverPhone, medicinas: validMeds });
       setCaregiverLink(user.phone, caregiverPhone);
       setSaved(true);
-      sileo.success({ title: "Cuidador registrado" });
+      notify("Cuidador registrado correctamente");
       loadTomas(caregiverPhone);
-      // Whitelistea el número en el sandbox de WhatsApp para que el bot pueda escribirle.
       conectarWhatsapp({ telefonoCuidador: caregiverPhone, nombreCuidador: caregiverName.trim() }).catch(() => {});
     } catch {
-      sileo.error({ title: "No se pudo guardar" });
+      notify("No se pudo guardar, intenta de nuevo", "error");
     }
     setSaving(false);
   }
 
   async function handleSimular() {
     if (!caregiverPhone) {
-      sileo.error({ title: "Registra al cuidador primero" });
+      notify("Registra al cuidador primero", "error");
       return;
     }
     setSimulating(true);
     try {
       const r = await simularToma(caregiverPhone);
       if (r.enviado) {
-        sileo.success({ title: `Recordatorio enviado a WhatsApp 📱` });
+        notify("Recordatorio enviado a WhatsApp 📱");
       } else if (r.error === "no_registrado") {
-        sileo.error({ title: "Número sin cuidador registrado" });
+        notify("Número sin cuidador registrado", "error");
       } else {
-        // Sin sesión de 24h abierta el mensaje no entra: abrimos el chat para
-        // que salude al bot y pueda volver a intentar.
         window.open(r.waLink || waSandboxLink(caregiverName), "_blank");
-        sileo.error({ title: "Saluda al bot en WhatsApp primero" });
+        notify("Saluda al bot en WhatsApp primero", "error");
       }
     } catch {
-      sileo.error({ title: "No se pudo enviar el recordatorio" });
+      notify("No se pudo enviar el recordatorio", "error");
     }
     setSimulating(false);
   }

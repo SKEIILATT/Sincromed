@@ -31,8 +31,8 @@ export default function AuthModal({ mode, onClose, onSuccess }) {
     await new Promise((r) => setTimeout(r, 600));
     try {
       const session = tab === "register"
-        ? registerLocalUser({ name: name.trim(), phone, pass })
-        : loginLocalUser({ phone, pass });
+        ? await registerLocalUser({ name: name.trim(), phone, pass })
+        : await loginLocalUser({ phone, pass });
       onSuccess(session);
     } catch (e) {
       setErr(e.message);

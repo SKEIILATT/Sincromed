@@ -90,25 +90,42 @@ export async function saveCaregiver({ nombreCuidador, telefonoCuidador, medicina
   }
 }
 
-// No real accounts exist in the backend (it only keys patients by caregiver phone),
-// so the family-member login is a local session layer on top of it. Both phone
-// values are already normalized E.164 digit strings (see PhoneInput), so the same
-// number always maps to the same key regardless of how it was typed.
-export function registerLocalUser({ name, phone, pass }) {
-  const stored = JSON.parse(localStorage.getItem("sm_users") || "{}");
-  if (stored[phone]) throw new Error("Este número ya está registrado.");
-  stored[phone] = { name, pass };
-  localStorage.setItem("sm_users", JSON.stringify(stored));
+const SB_URL = import.meta.env.VITE_SUPABASE_URL;
+const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
+const SB_HEADERS = {
+  "Content-Type": "application/json",
+  apikey: SB_KEY,
+  Authorization: `Bearer ${SB_KEY}`,
+};
+
+async function hashPass(pass) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pass));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export async function registerLocalUser({ name, phone, pass }) {
+  const hash = await hashPass(pass);
+  const res = await fetch(`${SB_URL}/rest/v1/usuarios`, {
+    method: "POST",
+    headers: { ...SB_HEADERS, Prefer: "return=representation" },
+    body: JSON.stringify({ nombre: name, telefono: phone, pass_hash: hash }),
+  });
+  if (res.status === 409) throw new Error("Este número ya está registrado.");
+  if (!res.ok) throw new Error("No se pudo crear la cuenta.");
   const session = { phone, name };
   localStorage.setItem("sm_session", JSON.stringify(session));
   return session;
 }
 
-export function loginLocalUser({ phone, pass }) {
-  const stored = JSON.parse(localStorage.getItem("sm_users") || "{}");
-  const u = stored[phone];
-  if (!u || u.pass !== pass) throw new Error("Número o contraseña incorrectos.");
-  const session = { phone, name: u.name };
+export async function loginLocalUser({ phone, pass }) {
+  const hash = await hashPass(pass);
+  const res = await fetch(
+    `${SB_URL}/rest/v1/usuarios?telefono=eq.${phone}&select=nombre,pass_hash`,
+    { headers: SB_HEADERS }
+  );
+  const rows = await res.json();
+  if (!rows.length || rows[0].pass_hash !== hash) throw new Error("Número o contraseña incorrectos.");
+  const session = { phone, name: rows[0].nombre };
   localStorage.setItem("sm_session", JSON.stringify(session));
   return session;
 }

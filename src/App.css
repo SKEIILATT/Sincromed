@@ -817,6 +817,50 @@ h1, h2, h3, .sm-font-head {
 }
 .sm-welcome-banner svg { color: #6ee7b7; flex-shrink: 0; }
 
+/* NOTIFICATIONS */
+.sm-notif-stack {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+.sm-notif {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px 13px 16px;
+  border-radius: 14px;
+  min-width: 260px;
+  max-width: 340px;
+  background: white;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13), 0 0 0 1px rgba(0,0,0,0.05);
+}
+.sm-notif--success .sm-notif-icon { color: #16a34a; }
+.sm-notif--error   .sm-notif-icon { color: var(--magenta); }
+.sm-notif-icon { flex-shrink: 0; line-height: 1; }
+.sm-notif-msg {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue);
+  line-height: 1.4;
+}
+.sm-notif-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #b0b8cc;
+  padding: 2px;
+  display: flex;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.sm-notif-close:hover { color: var(--ink); }
+
 /* FEEDBACK SECTION */
 .sm-feedback-section {
   background: var(--periwinkle);
