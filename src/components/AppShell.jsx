@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { User, Pill, Plus, X, LogOut, CheckCircle2, AlertCircle, MessageCircle, BellRing } from "lucide-react";
 import logotipo from "../assets/logotipo.png";
 import PhoneInput from "./PhoneInput";
-import { fetchTomas, saveCaregiver, getCaregiverLink, setCaregiverLink, conectarWhatsapp, simularToma, waSandboxLink } from "../lib/api";
+import { fetchTomas, saveCaregiver, getCaregiverLink, setCaregiverLink, conectarWhatsapp, waSandboxLink } from "../lib/api";
 import { validateName, validatePhone, validatePatientName } from "../lib/validation";
 import AdherenceHistory from "./AdherenceHistory";
 
@@ -24,7 +24,6 @@ export default function AppShell({ user, onLogout, notify }) {
   const [caregiverErr, setCaregiverErr] = useState("");
   const [tomas, setTomas] = useState([]);
   const [loadingTomas, setLoadingTomas] = useState(true);
-  const [simulating, setSimulating] = useState(false);
 
   useEffect(() => { loadTomas(caregiverPhone); }, []);
 
@@ -70,28 +69,6 @@ export default function AppShell({ user, onLogout, notify }) {
       notify("No se pudo guardar, intenta de nuevo", "error");
     }
     setSaving(false);
-  }
-
-  async function handleSimular() {
-    if (!caregiverPhone) {
-      notify("Registra al cuidador primero", "error");
-      return;
-    }
-    setSimulating(true);
-    try {
-      const r = await simularToma(caregiverPhone);
-      if (r.enviado) {
-        notify("Recordatorio enviado a WhatsApp 📱");
-      } else if (r.error === "no_registrado") {
-        notify("Número sin cuidador registrado", "error");
-      } else {
-        window.open(r.waLink || waSandboxLink(caregiverName), "_blank");
-        notify("Saluda al bot en WhatsApp primero", "error");
-      }
-    } catch {
-      notify("No se pudo enviar el recordatorio", "error");
-    }
-    setSimulating(false);
   }
 
   const initials = user.name ? user.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() : "U";
@@ -201,32 +178,18 @@ export default function AppShell({ user, onLogout, notify }) {
         <motion.div className="sm-card" variants={cardVariants} initial="hidden" animate="show" transition={{ delay: 0.14 }}>
           <div className="sm-card-title"><BellRing size={18} /> Probar la experiencia</div>
           <p style={{ margin: "0 0 14px", color: "var(--sm-text-soft, #5b6572)", fontSize: 14, lineHeight: 1.5 }}>
-            Simula la hora de la toma: el cuidador recibe el recordatorio por WhatsApp con la próxima
-            medicina y la pulsera SincroMed empieza a vibrar. Al presionar el botón de la pulsera,
-            el chat pedirá confirmar qué pastillas se tomó.
+            Simula la toma: abre el chat de SincroMed en WhatsApp, escribe <strong>“Hola”</strong> y
+            el agente te responde con la receta de hoy para que confirmes la toma por texto, audio o foto.
           </p>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <motion.button
-              className="sm-save-btn"
-              style={{ marginTop: 0 }}
-              disabled={simulating}
-              onClick={handleSimular}
-              whileHover={{ scale: simulating ? 1 : 1.02 }}
-              whileTap={{ scale: simulating ? 1 : 0.98 }}
-            >
-              <BellRing size={15} style={{ verticalAlign: "-2px", marginRight: 6 }} />
-              {simulating ? "Enviando…" : "Simular toma"}
-            </motion.button>
-            <a
-              href={waSandboxLink(caregiverName)}
-              target="_blank"
-              rel="noreferrer"
-              className="sm-add-med-btn"
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none" }}
-            >
-              <MessageCircle size={15} /> Abrir chat de WhatsApp
-            </a>
-          </div>
+          <a
+            href={waSandboxLink(caregiverName)}
+            target="_blank"
+            rel="noreferrer"
+            className="sm-save-btn"
+            style={{ marginTop: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, textDecoration: "none" }}
+          >
+            <MessageCircle size={16} /> Simular toma
+          </a>
         </motion.div>
 
         <AdherenceHistory tomas={tomas} loading={loadingTomas} onRefresh={() => loadTomas(caregiverPhone)} />

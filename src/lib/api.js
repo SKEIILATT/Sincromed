@@ -8,10 +8,10 @@ export function normPhone(p) {
   return p.replace(/\D/g, "");
 }
 
-// Link directo al chat del sandbox de WhatsApp de SincroMed.
-export const WA_SANDBOX = "13239183195";
+// Link directo al chat de WhatsApp de SincroMed (número del bot Mundial_2026).
+export const WA_SANDBOX = "593983456638";
 export function waSandboxLink(nombre) {
-  const txt = encodeURIComponent(`Hola SincroMed${nombre ? `, soy ${nombre}` : ""}`);
+  const txt = encodeURIComponent(`Hola${nombre ? `, soy ${nombre}` : ""}`);
   return `https://wa.me/${WA_SANDBOX}?text=${txt}`;
 }
 
