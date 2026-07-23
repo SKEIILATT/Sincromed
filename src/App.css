@@ -194,20 +194,41 @@ h1, h2, h3, .sm-font-head {
 }
 .sm-hero-bubble {
   position: absolute;
-  top: 14%;
-  left: -36px;
+  bottom: -18px;
+  left: -28px;
   background: white;
-  color: var(--blue);
-  font-size: 13px;
-  font-weight: 700;
-  padding: 10px 16px;
-  border-radius: 100px;
+  border-radius: 16px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+  gap: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0,0,0,0.04);
+  min-width: 220px;
 }
-.sm-hero-bubble svg { color: #16a34a; flex-shrink: 0; }
+.sm-hero-bubble-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #16a34a;
+}
+.sm-hero-bubble-text { display: flex; flex-direction: column; gap: 2px; }
+.sm-hero-bubble-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  line-height: 1.2;
+}
+.sm-hero-bubble-sub {
+  font-size: 11px;
+  color: var(--ink);
+  opacity: 0.55;
+  line-height: 1.2;
+}
 .sm-carousel-slide {
   position: absolute;
   inset: 0;
@@ -741,7 +762,10 @@ h1, h2, h3, .sm-font-head {
   .sm-hero { padding: 100px 20px 60px; }
   .sm-hero-inner { grid-template-columns: 1fr; gap: 48px; }
   .sm-carousel-phone { width: 280px; height: 280px; border-radius: 28px; }
-  .sm-hero-bubble { left: 0; font-size: 12px; padding: 8px 14px; }
+  .sm-hero-bubble { left: 0; bottom: -14px; min-width: 190px; padding: 10px 14px; }
+  .sm-hero-bubble-icon { width: 30px; height: 30px; }
+  .sm-hero-bubble-title { font-size: 11px; }
+  .sm-hero-bubble-sub { font-size: 10px; }
   .sm-stats-inner { grid-template-columns: 1fr; }
   .sm-stat { border-right: none; border-bottom: 1px solid rgba(27, 42, 107, 0.12); }
   .sm-stat:last-child { border-bottom: none; }
@@ -756,10 +780,9 @@ h1, h2, h3, .sm-font-head {
   .sm-app-content { padding: 20px 16px; }
 }
 
-/* TOASTS (sileo) — single-line pill, no expand/description panel */
+/* TOASTS (sileo) */
 :root {
-  --sileo-width: 380px;
-  --sileo-height: 48px;
+  --sileo-width: 340px;
 }
 [data-sileo-toast] {
   box-shadow: 0 12px 32px rgba(27, 42, 107, 0.18), 0 0 0 1px rgba(27, 42, 107, 0.06);
@@ -768,8 +791,8 @@ h1, h2, h3, .sm-font-head {
   font-family: var(--font-body);
   font-size: 0.85rem;
   font-weight: 600;
-  text-transform: none;
-  color: var(--blue) !important;
+  text-transform: none !important;
+  color: var(--ink) !important;
   white-space: normal;
 }
 

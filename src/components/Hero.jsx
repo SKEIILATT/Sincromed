@@ -77,12 +77,17 @@ export default function Hero({ onRegister }) {
           <Carousel />
           <motion.div
             className="sm-hero-bubble"
-            initial={{ opacity: 0, scale: 0.6, y: 10 }}
+            initial={{ opacity: 0, scale: 0.7, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.55, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <CheckCircle2 size={16} />
-            Toma confirmada · 08:00
+            <div className="sm-hero-bubble-icon">
+              <CheckCircle2 size={18} strokeWidth={2.5} />
+            </div>
+            <div className="sm-hero-bubble-text">
+              <span className="sm-hero-bubble-title">Toma confirmada</span>
+              <span className="sm-hero-bubble-sub">Hoy · 08:00 AM</span>
+            </div>
           </motion.div>
         </motion.div>
       </div>

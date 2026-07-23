@@ -76,30 +76,24 @@ export default function AppShell({ user, onLogout }) {
 
   async function handleSimular() {
     if (!caregiverPhone) {
-      sileo.error({ title: "Primero registra al cuidador y sus medicinas" });
+      sileo.error({ title: "Registra al cuidador primero" });
       return;
     }
     setSimulating(true);
     try {
       const r = await simularToma(caregiverPhone);
       if (r.enviado) {
-        sileo.success({
-          title: "Recordatorio enviado 📱",
-          description: `Revisa WhatsApp: toca tomar ${r.medicina}. La pulsera está vibrando.`,
-        });
+        sileo.success({ title: `Recordatorio enviado a WhatsApp 📱` });
       } else if (r.error === "no_registrado") {
-        sileo.error({ title: "Ese número no tiene cuidador registrado" });
+        sileo.error({ title: "Número sin cuidador registrado" });
       } else {
         // Sin sesión de 24h abierta el mensaje no entra: abrimos el chat para
         // que salude al bot y pueda volver a intentar.
         window.open(r.waLink || waSandboxLink(caregiverName), "_blank");
-        sileo.error({
-          title: "Aún no hay chat activo",
-          description: "Envía el saludo en WhatsApp y vuelve a presionar Simular toma.",
-        });
+        sileo.error({ title: "Saluda al bot en WhatsApp primero" });
       }
     } catch {
-      sileo.error({ title: "No se pudo simular la toma" });
+      sileo.error({ title: "No se pudo enviar el recordatorio" });
     }
     setSimulating(false);
   }
