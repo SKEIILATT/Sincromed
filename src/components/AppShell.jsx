@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { User, Pill, Plus, X, LogOut, CheckCircle2, AlertCircle, MessageCircle, BellRing } from "lucide-react";
 import logotipo from "../assets/logotipo.png";
 import PhoneInput from "./PhoneInput";
-import { fetchTomas, saveCaregiver, getCaregiverLink, setCaregiverLink, conectarWhatsapp, waSandboxLink } from "../lib/api";
+import { fetchTomas, saveCaregiver, getCaregiverLink, setCaregiverLink, conectarWhatsapp, simularToma, waSandboxLink } from "../lib/api";
 import { validateName, validatePhone, validatePatientName } from "../lib/validation";
 import AdherenceHistory from "./AdherenceHistory";
 
@@ -69,6 +69,13 @@ export default function AppShell({ user, onLogout, notify }) {
       notify("No se pudo guardar, intenta de nuevo", "error");
     }
     setSaving(false);
+  }
+
+  // Un solo botón: abre WhatsApp (gesto del usuario, evita bloqueo de popup) y
+  // en paralelo dispara el envío del recordatorio por la API de Jelou.
+  function handleSimular() {
+    window.open(waSandboxLink(caregiverName), "_blank");
+    if (caregiverPhone) simularToma(caregiverPhone).catch(() => {});
   }
 
   const initials = user.name ? user.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() : "U";
@@ -178,18 +185,18 @@ export default function AppShell({ user, onLogout, notify }) {
         <motion.div className="sm-card" variants={cardVariants} initial="hidden" animate="show" transition={{ delay: 0.14 }}>
           <div className="sm-card-title"><BellRing size={18} /> Probar la experiencia</div>
           <p style={{ margin: "0 0 14px", color: "var(--sm-text-soft, #5b6572)", fontSize: 14, lineHeight: 1.5 }}>
-            Simula la toma: abre el chat de SincroMed en WhatsApp, escribe <strong>“Hola”</strong> y
-            el agente te responde con la receta de hoy para que confirmes la toma por texto, audio o foto.
+            Simula la toma: te lleva al chat de SincroMed en WhatsApp y te llega el recordatorio de hoy.
+            Escribe <strong>“Hola”</strong> y el agente te responde para confirmar la toma por texto, audio o foto.
           </p>
-          <a
-            href={waSandboxLink(caregiverName)}
-            target="_blank"
-            rel="noreferrer"
+          <motion.button
             className="sm-save-btn"
-            style={{ marginTop: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, textDecoration: "none" }}
+            style={{ marginTop: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+            onClick={handleSimular}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <MessageCircle size={16} /> Simular toma
-          </a>
+          </motion.button>
         </motion.div>
 
         <AdherenceHistory tomas={tomas} loading={loadingTomas} onRefresh={() => loadTomas(caregiverPhone)} />
