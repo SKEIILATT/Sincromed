@@ -1,0 +1,5 @@
+[functions.jelou-bridge]
+verify_jwt = true
+
+[functions.jelou-evidence-webhook]
+verify_jwt = false

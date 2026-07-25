@@ -42,7 +42,7 @@ export default function Hero({ onRegister }) {
             <span>Adherencia a medicamentos · WhatsApp</span>
           </motion.div>
           <motion.h1 className="sm-hero-h1" variants={item}>
-            El cuidador no necesita una app nueva. <em>Tú sí necesitas saber que tomó sus pastillas.</em>
+            Recordatorios de medicinas por WhatsApp. <em>Tú ves cada toma confirmada.</em>
           </motion.h1>
           <motion.p className="sm-hero-sub" variants={item}>
             Registras las medicinas una vez. SincroMed le escribe al cuidador por WhatsApp a la hora exacta

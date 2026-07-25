@@ -1,37 +1,61 @@
 # SincroMed
 
-**Tranquilidad para tu familia, autonomía para los tuyos.**
+SincroMed coordina planes de medicacion y confirmaciones de toma entre
+familiares y cuidadores mediante un dashboard web y recordatorios de WhatsApp.
 
-SincroMed ayuda a las familias a cuidar de un adulto mayor que toma varios
-medicamentos al día, sin complicarle la vida a la persona que lo cuida.
+## Funcionalidades
 
-## ¿Cómo funciona?
+- Perfiles de pacientes con propietarios, colaboradores e invitados.
+- Medicamentos con varias horas, dias de la semana, indicaciones y vigencia.
+- Resumen de proximas tomas, adherencia e historial.
+- Evidencias privadas por texto, fotografia o audio.
+- Integracion de WhatsApp mediante Supabase Edge Functions y Jelou.
 
-1. **Registra al cuidador y sus medicinas.** Desde la app, el familiar
-   ingresa el nombre del cuidador, su número de WhatsApp y la lista de
-   medicamentos con su dosis y horario.
-2. **El cuidador no necesita instalar nada.** Un agente conversacional le
-   escribe por WhatsApp a la hora exacta de cada pastilla y le recuerda qué
-   le toca tomar. El cuidador confirma simplemente respondiendo con un
-   mensaje, un audio o una foto de las pastillas.
-3. **El familiar ve todo en tiempo real.** Desde el dashboard se puede
-   consultar qué se tomó, cuándo y con qué evidencia: racha de días
-   cumplidos, tomas de la última semana, calendario semanal y búsqueda por
-   medicamento — sin tener que llamar a preguntar.
+## Desarrollo local
 
-## ¿Para quién es?
+Requiere Node.js 20.19 o posterior y pnpm.
 
-Para cualquier familia con un adulto mayor polimedicado (5 o más pastillas
-diarias es algo común) cuyo cuidador no está familiarizado con apps nuevas,
-pero sí usa WhatsApp todos los días.
+```bash
+pnpm install
+pnpm dev
+```
 
-## Características
+Crea `.env.local` a partir de `.env.example`:
 
-- Registro de cuidador y medicamentos con horarios personalizados por
-  pastilla, sin límite de medicinas.
-- Recordatorios automáticos por WhatsApp.
-- Confirmación de toma por texto, audio o foto.
-- Dashboard de adherencia con racha de cumplimiento, historial semanal y
-  búsqueda por medicamento.
-- Cuenta propia para cada familiar, con soporte para números de distintos
-  países.
+```env
+VITE_GOOGLE_SCRIPT_URL=
+VITE_SUPABASE_URL=https://PROJECT_REF.supabase.co
+VITE_SUPABASE_KEY=SUPABASE_ANON_OR_PUBLISHABLE_KEY
+VITE_DEMO_MODE=false
+```
+
+Las variables `VITE_*` son publicas en el navegador. Nunca coloques en ellas
+claves `service_role`, secretos de Jelou, tokens multimedia ni claves de Datum.
+
+## Verificacion
+
+Antes de publicar:
+
+```bash
+pnpm test
+pnpm lint
+pnpm build
+```
+
+`pnpm test:visual` ejecuta la revision responsive automatizada cuando Chromium
+esta instalado para Playwright.
+
+## Supabase
+
+Aplica las migraciones de `supabase/migrations/` en orden de nombre. Las Edge
+Functions viven en `supabase/functions/`; su despliegue y secretos requeridos
+estan documentados en `supabase/README.md`.
+
+Los secretos privados se configuran en Supabase, no en archivos del frontend.
+La integracion de evidencias usa un bucket privado y URLs firmadas.
+
+## Produccion
+
+Publica el resultado de `pnpm build` (`dist/`) o conecta el repositorio a un
+proveedor compatible con Vite. Configura allí las tres variables publicas del
+archivo de ejemplo y mantén `VITE_DEMO_MODE=false`.

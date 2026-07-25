@@ -37,7 +37,12 @@ function NotifItem({ item, onDismiss }) {
           : <XCircle size={18} strokeWidth={2.5} />}
       </div>
       <span className="sm-notif-msg">{item.message}</span>
-      <button className="sm-notif-close" onClick={() => onDismiss(item.id)}>
+      <button
+        className="sm-notif-close"
+        type="button"
+        aria-label="Cerrar notificación"
+        onClick={() => onDismiss(item.id)}
+      >
         <X size={14} />
       </button>
     </motion.div>

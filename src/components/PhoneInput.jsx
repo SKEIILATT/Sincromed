@@ -20,6 +20,7 @@ export default function PhoneInput({ value, onChange, placeholder }) {
     <div className="sm-phone-input">
       <select
         className="sm-phone-country"
+        aria-label="Código de país"
         value={countryCode}
         onChange={(e) => {
           setCountryCode(e.target.value);
@@ -34,6 +35,7 @@ export default function PhoneInput({ value, onChange, placeholder }) {
       </select>
       <input
         className="sm-input sm-phone-national"
+        aria-label="Número de teléfono"
         placeholder={placeholder || "99 999 9999"}
         value={national}
         onChange={(e) => emit(country, e.target.value)}

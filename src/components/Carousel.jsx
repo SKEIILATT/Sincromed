@@ -20,7 +20,14 @@ export default function Carousel() {
       </div>
       <div className="sm-carousel-dots">
         {PEOPLE.map((_, i) => (
-          <button key={i} className={"sm-carousel-dot" + (i === idx ? " active" : "")} onClick={() => setIdx(i)} />
+          <button
+            key={i}
+            type="button"
+            className={"sm-carousel-dot" + (i === idx ? " active" : "")}
+            aria-label={`Ver imagen ${i + 1} de ${PEOPLE.length}`}
+            aria-current={i === idx ? "true" : undefined}
+            onClick={() => setIdx(i)}
+          />
         ))}
       </div>
     </div>

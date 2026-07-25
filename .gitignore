@@ -10,7 +10,18 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.artifacts/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+!supabase/functions/.env.example
 *.local
+.vercel/
+.netlify/
+supabase/.temp/
 
 # Editor directories and files
 .vscode/*
@@ -23,5 +34,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Internal reference docs — brand assets + backend credentials, not for the public repo
-docs/
+# Keep internal references private; publish only the Jelou handoff guide.
+docs/*
+!docs/JELOU_EVIDENCIAS_WHATSAPP.md

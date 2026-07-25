@@ -22,6 +22,10 @@ export default function FeedbackSection() {
     if (!rating) { setError("Por favor selecciona una calificación."); return; }
     if (!nombre.trim()) { setError("Ingresa tu nombre."); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Ingresa un email válido."); return; }
+    if (!SCRIPT_URL) {
+      setError("El formulario de opinión todavía no está configurado.");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
@@ -124,8 +128,9 @@ export default function FeedbackSection() {
                   {/* Fields */}
                   <div className="sm-feedback-row">
                     <div className="sm-feedback-field">
-                      <label>Nombre</label>
+                      <label htmlFor="feedback-name">Nombre</label>
                       <input
+                        id="feedback-name"
                         type="text"
                         placeholder="Tu nombre"
                         value={nombre}
@@ -134,8 +139,9 @@ export default function FeedbackSection() {
                       />
                     </div>
                     <div className="sm-feedback-field">
-                      <label>Correo electrónico</label>
+                      <label htmlFor="feedback-email">Correo electrónico</label>
                       <input
+                        id="feedback-email"
                         type="email"
                         placeholder="tu@email.com"
                         value={email}
@@ -146,11 +152,12 @@ export default function FeedbackSection() {
                   </div>
 
                   <div className="sm-feedback-field">
-                    <label>
+                    <label htmlFor="feedback-opinion">
                       ¿Qué agregarías o cambiarías?{" "}
                       <span className="sm-feedback-optional">(opcional)</span>
                     </label>
                     <textarea
+                      id="feedback-opinion"
                       placeholder="Cuéntanos lo que se te ocurra…"
                       rows={3}
                       value={opinion}
