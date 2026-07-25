@@ -3,6 +3,11 @@ const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const JELOU_FUNCTIONS_URL = Deno.env.get("JELOU_FUNCTIONS_URL") || "https://sincromed.fn.jelou.ai";
 const JELOU_APPS_KEY = Deno.env.get("JELOU_APPS_KEY") || "";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 type BridgePayload = {
   action?: "save-plan" | "connect" | "simulate";
@@ -16,7 +21,7 @@ type BridgePayload = {
 function json(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
 }
 
@@ -51,6 +56,9 @@ async function jelouRequest(path: string, body: Record<string, unknown>, authent
 }
 
 Deno.serve(async (request) => {
+  if (request.method === "OPTIONS") {
+    return new Response("ok", { headers: CORS_HEADERS });
+  }
   if (request.method !== "POST") return json(405, { error: "Method not allowed" });
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     return json(500, { error: "Bridge is not configured" });
