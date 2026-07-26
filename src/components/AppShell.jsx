@@ -387,8 +387,12 @@ export default function AppShell({ user, onLogout, notify }) {
     }
     window.open(waSandboxLink(caregiverName), "_blank");
     try {
-      await simularToma({ patientId, caregiverPhone });
-      notify("Recordatorio de prueba enviado");
+      const result = await simularToma({ patientId, caregiverPhone });
+      notify(
+        result?.medicina
+          ? `💊 ${result.medicina}: bandita activada y mensaje enviado`
+          : "⌚ Bandita activada y recordatorio enviado",
+      );
     } catch (error) {
       notify(error.message || "No se pudo enviar el recordatorio de prueba.", "error");
     }

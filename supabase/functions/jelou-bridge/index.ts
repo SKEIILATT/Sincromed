@@ -1,6 +1,6 @@
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
-const JELOU_FUNCTIONS_URL = Deno.env.get("JELOU_FUNCTIONS_URL") || "https://sincromed.fn.jelou.ai";
+const JELOU_FUNCTIONS_URL = Deno.env.get("JELOU_FUNCTIONS_URL") || "https://sincromed-ec.fn.jelou.ai";
 const JELOU_APPS_KEY = Deno.env.get("JELOU_APPS_KEY") || "";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CORS_HEADERS = {
