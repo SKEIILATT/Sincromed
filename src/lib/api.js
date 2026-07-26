@@ -3,7 +3,7 @@ import { requestErrorMessage, SESSION_EXPIRED_MESSAGE } from "./request-error";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-const WA_SANDBOX = "593983456638";
+const WA_SANDBOX = "593979040410";
 
 export function normPhone(phone) {
   return String(phone || "").replace(/\D/g, "");
