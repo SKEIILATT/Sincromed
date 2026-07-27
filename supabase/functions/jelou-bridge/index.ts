@@ -49,8 +49,16 @@ async function jelouRequest(path: string, body: Record<string, unknown>, authent
     body: JSON.stringify(body),
   });
   const data = await response.json().catch(() => null);
-  if (!response.ok || data?.ok === false) {
-    throw new Error(data?.error || data?.message || `Jelou request failed (${response.status})`);
+  const upstreamError = data?.error || data?.message;
+  if (!response.ok) {
+    throw new Error(
+      upstreamError || `Jelou no respondió correctamente en ${path} (HTTP ${response.status})`,
+    );
+  }
+  if (data?.ok === false) {
+    throw new Error(
+      upstreamError || `Jelou no pudo completar el servicio ${path}`,
+    );
   }
   return data;
 }

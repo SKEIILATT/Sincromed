@@ -388,11 +388,22 @@ export default function AppShell({ user, onLogout, notify }) {
     window.open(waSandboxLink(caregiverName), "_blank");
     try {
       const result = await simularToma({ patientId, caregiverPhone });
-      notify(
-        result?.medicina
-          ? `💊 ${result.medicina}: bandita activada y mensaje enviado`
-          : "⌚ Bandita activada y recordatorio enviado",
-      );
+      const medicina = result?.medicina ? ` para ${result.medicina}` : "";
+      if (result?.enviado && result?.vibrando) {
+        notify(`💊 Recordatorio enviado y bandita activada${medicina}`);
+      } else if (result?.vibrando) {
+        notify(
+          `⌚ Bandita activada${medicina}, pero WhatsApp no pudo enviar el mensaje`,
+          "error",
+        );
+      } else if (result?.enviado) {
+        notify(
+          `💬 Recordatorio enviado${medicina}, pero la bandita no pudo activarse`,
+          "error",
+        );
+      } else {
+        throw new Error(result?.error || "No se pudo iniciar la simulación.");
+      }
     } catch (error) {
       notify(error.message || "No se pudo enviar el recordatorio de prueba.", "error");
     }
